@@ -1,0 +1,626 @@
+<!--
+  GitHub Pages usage:
+  1) Commit this file as /projects.html in your repository.
+  2) Enable GitHub Pages (Settings → Pages) for your branch.
+  3) Open https://<your-username>.github.io/<repo>/projects.html
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projects Directory — Adnin Huraiyah</title>
+  <style>
+    /* =========================
+       Theme variables (editable)
+       ========================= */
+    :root {
+      --bg: #090b0a;
+      --panel: rgba(20, 22, 21, 0.84);
+      --panel-card: rgba(31, 35, 33, 0.92);
+      --text: #f5f5f5;
+      --muted: #b5b8b7;
+      --subtle: #cccccc;
+      --accent: #22c55e;
+      --border: rgba(255, 255, 255, 0.12);
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100%;
+    }
+
+    .page {
+      position: relative;
+      min-height: 100dvh;
+      overflow: hidden;
+      padding: clamp(18px, 2.8vw, 36px);
+      isolation: isolate;
+    }
+
+    .ambient {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.24;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 38%),
+        radial-gradient(circle at 80% 75%, color-mix(in srgb, var(--accent) 17%, transparent), transparent 46%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: auto, auto, 30px 30px, 30px 30px;
+      animation: ambientShift 18s linear infinite alternate;
+    }
+
+    @keyframes ambientShift {
+      from { background-position: 0% 0%, 100% 100%, 0 0, 0 0; }
+      to   { background-position: 10% 5%, 90% 95%, 30px 12px, 12px 30px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ambient { animation: none; }
+      .card, .project-link, .view { transition: none !important; }
+    }
+
+    .panel {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(6px);
+      padding: clamp(16px, 2vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(14px, 1.8vw, 20px);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .author {
+      margin: 0;
+      color: var(--subtle);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .title {
+      margin: 8px 0;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      font-size: clamp(28px, 5vw, 38px);
+    }
+    .intro {
+      margin: 0;
+      color: var(--muted);
+      max-width: 740px;
+      line-height: 1.45;
+      font-size: clamp(14px, 2.1vw, 15px);
+    }
+
+    .counter {
+      align-self: flex-start;
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--accent) 44%, transparent);
+      background: color-mix(in srgb, var(--accent) 13%, transparent);
+      padding: 10px 12px;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .view-wrap {
+      position: relative;
+      min-height: 320px;
+    }
+    .view {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+    .view.is-entering {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+    .category-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .project-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card, .project-link {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--panel-card);
+      color: var(--text);
+      width: 100%;
+    }
+
+    .card {
+      cursor: pointer;
+      text-align: left;
+      padding: clamp(14px, 1.8vw, 16px);
+      min-height: 112px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+      background: rgba(37, 42, 39, 0.96);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .label {
+      font-size: 11px;
+      color: #c7cac9;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .card-title {
+      margin: 0;
+      font-size: clamp(16px, 2.2vw, 18px);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .card-count {
+      margin-top: auto;
+      color: var(--accent);
+      font-size: 13px;
+    }
+
+    .detail-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .back-btn {
+      border: 1px solid color-mix(in srgb, var(--accent) 56%, transparent);
+      background: rgba(0, 0, 0, 0.26);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 160ms ease, transform 160ms ease;
+    }
+    .back-btn:hover { background: rgba(0, 0, 0, 0.4); transform: translateY(-1px); }
+    .detail-meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .project-link {
+      min-height: 118px;
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+    .project-link:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--accent) 68%, var(--border));
+      box-shadow: var(--shadow-hover);
+    }
+    .project-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .type-pill {
+      font-size: 11px;
+      color: #d5d7d6;
+      border: 1px solid color-mix(in srgb, var(--accent) 48%, transparent);
+      border-radius: 999px;
+      padding: 4px 8px;
+      letter-spacing: 0.02em;
+    }
+    .external-indicator {
+      color: var(--accent);
+      font-size: 14px;
+      line-height: 1;
+    }
+    .project-title {
+      margin: 0;
+      color: #f2f2f2;
+      line-height: 1.35;
+      font-size: clamp(14px, 2vw, 15px);
+    }
+    .project-foot {
+      margin-top: auto;
+      color: #a9adab;
+      font-size: 12px;
+    }
+    .project-actions {
+      margin-top: auto;
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: 8px;
+      border: 1px solid color-mix(in srgb, var(--accent) 44%, transparent);
+      background: rgba(0, 0, 0, 0.22);
+      color: #e8ecea;
+      text-decoration: none;
+      font-size: 12px;
+      line-height: 1.2;
+      transition: background-color 160ms ease, border-color 160ms ease;
+    }
+    .action-link:hover {
+      background: rgba(0, 0, 0, 0.4);
+      border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    }
+
+    /* Visible focus styles for accessibility */
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Tablet */
+    @media (max-width: 1023px) {
+      .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    /* Phone */
+    @media (max-width: 639px) {
+      .page { padding: 18px; }
+      .panel { padding: 16px; }
+      .category-grid,
+      .project-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page" id="appRoot">
+    <div class="ambient" aria-hidden="true"></div>
+
+    <section class="panel" aria-labelledby="mainTitle">
+      <header class="header">
+        <div>
+          <!-- Easily editable heading/text -->
+          <p class="author" id="authorName">Adnin Huraiyah</p>
+          <h1 class="title" id="mainTitle">Projects Directory</h1>
+          <p class="intro" id="introText">Browse selected GIS, remote sensing, environmental, and sustainability work.</p>
+        </div>
+        <div class="counter" id="projectCounter" aria-live="polite"></div>
+      </header>
+
+      <div class="view-wrap" id="viewWrap" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    /* =========================
+       Data array (editable)
+       ========================= */
+    const CATEGORIES = [
+      {
+        name: "GIS / Spatial Analysis",
+        projects: [
+          {
+            title: "ASEAN CO₂ emissions — spatio-temporal GIS mapping (1994–2024)",
+            type: "Folder",
+            url: "https://drive.google.com/drive/folders/1SpxDEp19epFhH99HuQL7MicTvsBkwacY?usp=sharing"
+          },
+          {
+            title: "CO₂ emission hotspots & urban afforestation suitability, Klang Valley",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1iyzPn8wv29SnTbSMLwNEBkNkrXC9qF9X/view?usp=sharing"
+          },
+          {
+            title: "Land use change in Johor — urban & industrial expansion",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1Ob2N-njobvCf8hElIEaagQ5s8SJFayjj/view?usp=sharing"
+          },
+          {
+            title: "Watershed delineation & drainage map, Pahang",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1YC-k6EXgxl2kLjMXji_bWljTikR0naJS/view?usp=sharing"
+          },
+          {
+            title: "Spatiotemporal roaming behaviour of a Malayan tapir",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1sP2EldQgg7ksQ1P0IHbo2oodryPqp6Cb/view?usp=sharing"
+          }
+        ]
+      },
+      {
+        name: "Remote Sensing",
+        projects: [
+          {
+            title: "Intro to satellite imagery",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/14zacf4YOnz1iSADejTX8arXmTp3CzYyw/view?usp=sharing"
+          },
+          {
+            title: "Landsat 8 agriculture band composites",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1djNzblCWA9TXp0uSQlmd-j3BYVKwrESi/view?usp=sharing"
+          },
+          {
+            title: "Landsat RGB composite map",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1XhlnLlOSg9uuRlx8XcjfsD6sKDTeq213/view?usp=sharing"
+          }
+        ]
+      },
+      {
+        name: "Environmental Analysis",
+        projects: [
+          {
+            title: "Carbon stock assessment, secondary forest behind UMK library",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1o0kgeAOzZ3LV48x_oM6thdZ3JAXdpT8M/view?usp=sharing"
+          },
+          {
+            title: "Energy sources: biomass",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1Gd44EnMXBg1kKL1VoJRhFIdYDlI6IhTD/view?usp=sharing"
+          },
+          {
+            title: "Community water sustainability, Kampung Laut",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1BaEAbO0aKq5NGx-UlxUGSsAj3DCqGDaa/view?usp=sharing"
+          }
+        ]
+      },
+      {
+        name: "Case Studies",
+        projects: [
+          {
+            title: "Bukit Merah 1982 radioactive pollution",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1pQHIBYAd5ZL_jrLghY4Sp0DRmV_qfmCD/view?usp=sharing"
+          },
+          {
+            title: "Putrajaya relocation — air quality & meteorological factors",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1HmKmXw_4XQnMgNmV6j_EhtXcuEbhB0ej/view?usp=sharing"
+          }
+        ]
+      },
+      {
+        name: "Applications",
+        projects: [
+          {
+            title: "Air quality monitoring app — Python GUI + ML",
+            type: "Folder",
+            url: "https://drive.google.com/drive/folders/1xEQMY3cGgeniHl1Ldo-zaG_D8cwUoc5l?usp=sharing"
+          },
+          {
+            title: "MyLestari — sustainable-living app concept",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1-u3Swybmg-LB4popq6ADbqrfRxpt9xVP/view?usp=sharing"
+          },
+          {
+            title: "Wind turbine food dryer",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/17KhA5hNepGOfx-udLQvKFthdXD5F2-bS/view?usp=sharing"
+          }
+        ]
+      },
+      {
+        name: "Data Analysis",
+        projects: [
+          {
+            title: "GreenScape Sustainability Initiative",
+            type: "Folder",
+            url: "https://drive.google.com/drive/folders/1xS7hY3Qwxb0tUzgEkLGNTbrAcsZVCFCI?usp=sharing"
+          },
+          {
+            title: "Ancient climate — ice-core CO₂ vs. temperature anomaly",
+            type: "Document",
+            url: "https://docs.google.com/document/d/1DPepfb3jRNo9C7D9UzpgzdBuVTviWJOn/edit?usp=sharing&ouid=102245110156341943649&rtpof=true&sd=true"
+          },
+          {
+            title: "Early industrial age to present climate",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1Q79D62FyCelDX9D_D2AJ1Qu2QfrQghb9/view?usp=sharing"
+          },
+          {
+            title: "ANOVA on soil P concentration",
+            type: "PDF",
+            url: "https://drive.google.com/file/d/1qtYT8AMA1zdW9HgbUVwOOP0mCo4sGdUe/view?usp=sharing"
+          }
+        ]
+      }
+    ];
+
+    const viewWrap = document.getElementById("viewWrap");
+    const counterEl = document.getElementById("projectCounter");
+    let selectedCategoryName = "";
+
+    const totalProjects = CATEGORIES.reduce((sum, c) => sum + c.projects.length, 0);
+    counterEl.textContent = `${totalProjects} Projects`;
+
+    function animateSwap(newNode) {
+      const oldNode = viewWrap.firstElementChild;
+      newNode.classList.add("view", "is-entering");
+      viewWrap.appendChild(newNode);
+      requestAnimationFrame(() => {
+        newNode.classList.remove("is-entering");
+      });
+      if (oldNode) {
+        oldNode.classList.add("is-entering");
+        setTimeout(() => {
+          if (oldNode.parentNode === viewWrap) oldNode.remove();
+        }, 220);
+      }
+    }
+
+    function createCategoryView() {
+      const section = document.createElement("section");
+      section.className = "grid category-grid";
+      section.setAttribute("aria-label", "Project categories");
+
+      CATEGORIES.forEach((category) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "card";
+        btn.setAttribute("aria-label", `Open ${category.name} projects`);
+
+        btn.innerHTML = `
+          <span class="label">Category</span>
+          <p class="card-title">${category.name}</p>
+          <span class="card-count">${category.projects.length} projects →</span>
+        `;
+
+        btn.addEventListener("click", () => {
+          selectedCategoryName = category.name;
+          render();
+        });
+
+        section.appendChild(btn);
+      });
+
+      return section;
+    }
+
+    function createDetailView(category) {
+      const wrapper = document.createElement("section");
+      wrapper.setAttribute("aria-label", `${category.name} projects`);
+
+      const top = document.createElement("div");
+      top.className = "detail-top";
+
+      const backBtn = document.createElement("button");
+      backBtn.type = "button";
+      backBtn.className = "back-btn";
+      backBtn.textContent = "← Back to Directory";
+      backBtn.setAttribute("aria-label", "Return to project directory");
+      backBtn.addEventListener("click", () => {
+        selectedCategoryName = "";
+        render();
+      });
+
+      const meta = document.createElement("p");
+      meta.className = "detail-meta";
+      meta.textContent = `${category.name} · ${category.projects.length} items`;
+
+      top.append(backBtn, meta);
+
+      const grid = document.createElement("div");
+      grid.className = "grid project-grid";
+
+      function getDriveFileId(url) {
+        const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+        return fileMatch ? fileMatch[1] : "";
+      }
+
+      function getDocsId(url) {
+        const docsMatch = url.match(/docs\.google\.com\/document\/d\/([^/]+)/);
+        return docsMatch ? docsMatch[1] : "";
+      }
+
+      function getDownloadAction(project) {
+        if (project.type === "Folder") return null;
+
+        if (project.url.includes("drive.google.com/file/d/")) {
+          const fileId = getDriveFileId(project.url);
+          if (!fileId) return null;
+          return {
+            href: `https://drive.google.com/uc?export=download&id=${fileId}`,
+            label: "Download file ↓"
+          };
+        }
+
+        if (project.url.includes("docs.google.com/document/d/")) {
+          const docId = getDocsId(project.url);
+          if (!docId) return null;
+          return {
+            href: `https://docs.google.com/document/d/${docId}/export?format=pdf`,
+            label: "Download PDF ↓"
+          };
+        }
+
+        return null;
+      }
+
+      category.projects.forEach((project) => {
+        const card = document.createElement("article");
+        card.className = "project-link";
+
+        const openLabel = project.type === "Folder" ? "Open folder ↗" : "Open external file ↗";
+        const downloadAction = getDownloadAction(project);
+
+        card.innerHTML = `
+          <div class="project-top">
+            <span class="type-pill">${project.type}</span>
+            <span class="external-indicator" aria-hidden="true">↗</span>
+          </div>
+          <p class="project-title">${project.title}</p>
+          <div class="project-actions">
+            <a class="action-link" href="${project.url}" target="_blank" rel="noopener noreferrer" aria-label="${project.title} (${project.type}) opens in a new tab">
+              ${openLabel}
+            </a>
+            ${downloadAction ? `<a class="action-link" href="${downloadAction.href}" target="_blank" rel="noopener noreferrer" aria-label="${downloadAction.label} for ${project.title} (opens in a new tab)">${downloadAction.label}</a>` : ""}
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      wrapper.append(top, grid);
+      return wrapper;
+    }
+
+    function render() {
+      if (!selectedCategoryName) {
+        animateSwap(createCategoryView());
+        return;
+      }
+      const category = CATEGORIES.find((c) => c.name === selectedCategoryName);
+      if (!category) {
+        selectedCategoryName = "";
+        animateSwap(createCategoryView());
+        return;
+      }
+      animateSwap(createDetailView(category));
+    }
+
+    render();
+  </script>
+</body>
+</html>
