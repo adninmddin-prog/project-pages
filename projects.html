@@ -545,12 +545,12 @@
       grid.className = "grid project-grid";
 
       function getDriveFileId(url) {
-        const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+        const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
         return fileMatch ? fileMatch[1] : "";
       }
 
       function getDocsId(url) {
-        const docsMatch = url.match(/docs\.google\.com\/document\/d\/([^/]+)/);
+        const docsMatch = url.match(/docs\.google\.com\/document\/d\/([^\/]+)/);
         return docsMatch ? docsMatch[1] : "";
       }
 
